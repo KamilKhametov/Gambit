@@ -10,5 +10,6 @@
 
 
     <color name="color_for_action_bar">#E3128F</color>
+    <color name="background_for_price">#0A000000</color>
 
 </resources>
