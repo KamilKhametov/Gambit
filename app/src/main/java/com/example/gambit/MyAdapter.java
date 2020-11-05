@@ -27,6 +27,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private SharedPreferences preferencesSum;
     private SharedPreferences preferencesNumberSum;
 
+
     public MyAdapter( List<ResponseData> responseDataList ) {
         this.responseDataList=responseDataList;
     }
@@ -34,7 +35,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     @NonNull
     @Override
-    public MyAdapter.ViewHolder onCreateViewHolder( @NonNull ViewGroup parent, int viewType ) {
+    public ViewHolder onCreateViewHolder( @NonNull ViewGroup parent, int viewType ) {
         View view =LayoutInflater.from ( parent.getContext () ).inflate ( R.layout.layout_item, parent, false );
         ViewHolder vh = new ViewHolder ( view );
         if(preferencesBasket == null){
@@ -79,23 +80,22 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         boolean plus;
         boolean minus;
         boolean sum;
-        int number = 0;
-
+        int number=1;
 
         public ViewHolder( @NonNull View itemView ) {
             super ( itemView );
-            imageFood = itemView.findViewById ( R.id.imageFood );
-            titleFood = itemView.findViewById ( R.id.titleFood );
-            btnPrice = itemView.findViewById ( R.id.btn_price );
-            btnMinus = itemView.findViewById ( R.id.btnMinus );
-            btnPlus = itemView.findViewById ( R.id.btnPlus );
-            textSum = itemView.findViewById ( R.id.textSum );
-            btnBasket = itemView.findViewById ( R.id.btnBasket );
+            imageFood=itemView.findViewById ( R.id.imageFood );
+            titleFood=itemView.findViewById ( R.id.titleFood );
+            btnPrice=itemView.findViewById ( R.id.btn_price );
+            btnMinus=itemView.findViewById ( R.id.btnMinus );
+            btnPlus=itemView.findViewById ( R.id.btnPlus );
+            textSum=itemView.findViewById ( R.id.textSum );
+            btnBasket=itemView.findViewById ( R.id.btnBasket );
 
             btnBasket.setOnClickListener ( new View.OnClickListener () {
                 @Override
                 public void onClick( View view ) {
-                    if(preferencesBasket.getBoolean ( String.valueOf ( currentResponseData.getId () ), false)){
+                    if (preferencesBasket.getBoolean ( String.valueOf ( currentResponseData.getId () ), false )) {
                         // Button Basket visibility and save data
                         btnBasket.setVisibility ( View.VISIBLE );
                         saveDataBtnBasket ( String.valueOf ( currentResponseData.getId () ), false );
@@ -111,7 +111,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                         // TextView textSum visibility and save data
                         textSum.setVisibility ( View.VISIBLE );
                         saveDataTextSum ( String.valueOf ( currentResponseData.getId () ), false );
-                    }else {
+                    } else {
                         // Button Basket visibility and save data
                         btnBasket.setVisibility ( View.GONE );
                         saveDataBtnBasket ( String.valueOf ( currentResponseData.getId () ), true );
@@ -126,120 +126,133 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
                         // TextView textSum visibility and save data
                         textSum.setVisibility ( View.VISIBLE );
+                        textSum.setText ( String.valueOf ( 1 ) );
                         saveDataTextSum ( String.valueOf ( currentResponseData.getId () ), true );
 
                     }
                 }
             } );
-
         }
 
         public void bind( ResponseData responseData ) {
-            currentResponseData = responseData;
+            currentResponseData=responseData;
             // Показ сохраненных данных на активити
-            basket= preferencesBasket.getBoolean ( String.valueOf ( currentResponseData.getId () ), true );
-            plus = preferencesPlus.getBoolean ( String.valueOf ( currentResponseData.getId () ), true );
-            minus = preferencesMinus.getBoolean ( String.valueOf ( currentResponseData.getId () ), true );
-            sum = preferencesSum.getBoolean ( String.valueOf ( currentResponseData.getId () ), false );
-            number = preferencesNumberSum.getInt ( String.valueOf ( currentResponseData.getId () ), 0 );
+            basket=preferencesBasket.getBoolean ( String.valueOf ( currentResponseData.getId () ), true );
+            plus=preferencesPlus.getBoolean ( String.valueOf ( currentResponseData.getId () ), true );
+            minus=preferencesMinus.getBoolean ( String.valueOf ( currentResponseData.getId () ), true );
+            sum=preferencesSum.getBoolean ( String.valueOf ( currentResponseData.getId () ), true );
+            number=preferencesNumberSum.getInt ( String.valueOf ( currentResponseData.getId () ), 1 );
             textSum.setText ( String.valueOf ( number ) );
 
-
             // get image from url and set in ImageView
-            String imageUrl = responseData.getImage ();
+            String imageUrl=responseData.getImage ();
             Picasso.with ( itemView.getContext () )
                     .load ( imageUrl )
                     .into ( imageFood );
             // setting title food
             titleFood.setText ( responseData.getName () );
             // setting price on the button text
-            btnPrice.setText ( String.valueOf ( responseData.getPrice () + "₽" ));
-
+            btnPrice.setText ( String.valueOf ( responseData.getPrice () + "₽" ) );
 
             // Кнопка Basket при входе в активити
-            if(preferencesBasket.getBoolean ( String.valueOf ( currentResponseData.getId () ), false )){
+            if (preferencesBasket.getBoolean ( String.valueOf ( currentResponseData.getId () ), false )) {
                 btnBasket.setVisibility ( View.GONE );
-            }else {
+            } else {
                 btnBasket.setVisibility ( View.VISIBLE );
             }
 
             // Кнопка Plus при входе в активити
-            if(preferencesPlus.getBoolean ( String.valueOf ( currentResponseData.getId () ), false )){
+            if (preferencesPlus.getBoolean ( String.valueOf ( currentResponseData.getId () ), false )) {
                 btnPlus.setVisibility ( View.VISIBLE );
-            }else {
+            } else {
                 btnPlus.setVisibility ( View.GONE );
             }
 
             // Кнопка Minus при входе в активити
-            if(preferencesPlus.getBoolean ( String.valueOf ( currentResponseData.getId () ), false )){
+            if (preferencesPlus.getBoolean ( String.valueOf ( currentResponseData.getId () ), false )) {
                 btnMinus.setVisibility ( View.VISIBLE );
-            }else {
+            } else {
                 btnMinus.setVisibility ( View.GONE );
             }
 
             // TextView textSum при входе в активити
-            if(preferencesSum.getBoolean ( String.valueOf ( currentResponseData.getId () ), false )){
+            if (preferencesSum.getBoolean ( String.valueOf ( currentResponseData.getId () ), false )) {
                 textSum.setVisibility ( View.VISIBLE );
-            }else {
+            } else {
                 textSum.setVisibility ( View.GONE );
             }
 
             // Вызов клика на кнопку Plus
             clickerPlus ();
+            // Вызов клика на кнопку Minus
+            clickerMinus ();
 
 
         }
 
-        public void saveDataBtnBasket( String id, boolean dataToSave){
-            SharedPreferences.Editor editor = preferencesBasket.edit ();
+        // Save data for object View
+        public void saveDataBtnBasket( String id, boolean dataToSave ) {
+            SharedPreferences.Editor editor=preferencesBasket.edit ();
             editor.putBoolean ( id, dataToSave );
             editor.apply ();
         }
 
-        public void saveDataPlus(String id, boolean dataToSave){
-            SharedPreferences.Editor editor = preferencesPlus.edit ();
+        public void saveDataPlus( String id, boolean dataToSave ) {
+            SharedPreferences.Editor editor=preferencesPlus.edit ();
             editor.putBoolean ( id, dataToSave );
             editor.apply ();
         }
 
-        public void saveDataMinus(String id , boolean dataToSave){
-            SharedPreferences.Editor editor = preferencesMinus.edit ();
+        public void saveDataMinus( String id, boolean dataToSave ) {
+            SharedPreferences.Editor editor=preferencesMinus.edit ();
             editor.putBoolean ( id, dataToSave );
             editor.apply ();
         }
 
-        public void saveDataTextSum( String id, boolean dataToSave){
-            SharedPreferences.Editor editor = preferencesSum.edit ();
+        public void saveDataTextSum( String id, boolean dataToSave ) {
+            SharedPreferences.Editor editor=preferencesSum.edit ();
             editor.putBoolean ( id, dataToSave );
             editor.apply ();
         }
 
-        public void saveDataNumberSum(String id, int dataToSave){
-            SharedPreferences.Editor editor = preferencesNumberSum.edit ();
+        public void saveDataNumberSum( String id, int dataToSave ) {
+            SharedPreferences.Editor editor=preferencesNumberSum.edit ();
             editor.putInt ( id, dataToSave );
             editor.apply ();
         }
 
-        public void clickerPlus(){
+
+        // Clickers for buttons plus and minus
+        public void clickerPlus() {
             btnPlus.setOnClickListener ( new View.OnClickListener () {
                 @Override
                 public void onClick( View view ) {
-                    number = Integer.parseInt ( textSum.getText ().toString () ) + 1;
+                    number=Integer.parseInt ( textSum.getText ().toString () ) + 1;
                     textSum.setText ( String.valueOf ( number ) );
                     saveDataNumberSum ( String.valueOf ( currentResponseData.getId () ), number );
                 }
             } );
         }
 
-        public void clickerMinus(){
+        public void clickerMinus() {
             btnMinus.setOnClickListener ( new View.OnClickListener () {
                 @Override
                 public void onClick( View view ) {
+                    if (Integer.parseInt ( textSum.getText ().toString () ) > 0) {
+                        number=Integer.parseInt ( textSum.getText ().toString () ) - 1;
+                        textSum.setText ( String.valueOf ( number ) );
+                        saveDataNumberSum ( String.valueOf ( currentResponseData.getId () ), number );
 
+                        if (Integer.parseInt ( textSum.getText ().toString () ) == 0) {
+                            textSum.setVisibility ( View.GONE );
+                            btnPlus.setVisibility ( View.GONE );
+                            btnMinus.setVisibility ( View.GONE );
+                            btnBasket.setVisibility ( View.VISIBLE );
+                        }
+                    }
                 }
             } );
         }
-
     }
 
 }
