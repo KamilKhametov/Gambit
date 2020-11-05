@@ -20,8 +20,10 @@ import java.util.List;
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     private List<ResponseData> responseDataList;
-    private SharedPreferences preferences;
+    private SharedPreferences preferencesBasket;
     private SharedPreferences preferencesPlus;
+    private SharedPreferences preferencesMinus;
+    private SharedPreferences preferencesSum;
 
     public MyAdapter( List<ResponseData> responseDataList ) {
         this.responseDataList=responseDataList;
@@ -33,11 +35,17 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public MyAdapter.ViewHolder onCreateViewHolder( @NonNull ViewGroup parent, int viewType ) {
         View view =LayoutInflater.from ( parent.getContext () ).inflate ( R.layout.layout_item, parent, false );
         ViewHolder vh = new ViewHolder ( view );
-        if(preferences == null){
-            preferences = parent.getContext ().getSharedPreferences ( "NICE", Context.MODE_PRIVATE );
+        if(preferencesBasket == null){
+            preferencesBasket= parent.getContext ().getSharedPreferences ( "NICE_BASKET", Context.MODE_PRIVATE );
         }
         if (preferencesPlus == null){
             preferencesPlus = parent.getContext ().getSharedPreferences ( "NICE_PLUS", Context.MODE_PRIVATE );
+        }
+        if(preferencesMinus == null){
+            preferencesMinus = parent.getContext ().getSharedPreferences ( "NICE_MINUS", Context.MODE_PRIVATE );
+        }
+        if(preferencesSum == null){
+            preferencesSum = parent.getContext ().getSharedPreferences ( "NICE_SUM", Context.MODE_PRIVATE );
         }
         return vh;
     }
@@ -62,8 +70,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         private TextView textSum;
         private Button btnBasket;
         private ResponseData currentResponseData;
-        boolean s;
+        boolean basket;
         boolean plus;
+        boolean minus;
+        boolean sum;
+        int number= 0;
 
 
         public ViewHolder( @NonNull View itemView ) {
@@ -79,17 +90,38 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             btnBasket.setOnClickListener ( new View.OnClickListener () {
                 @Override
                 public void onClick( View view ) {
-                    if(preferences.getBoolean ( String.valueOf ( currentResponseData.getId () ), false)){
+                    if(preferencesBasket.getBoolean ( String.valueOf ( currentResponseData.getId () ), false)){
+                        // Button Basket visibility and save data
                         btnBasket.setVisibility ( View.VISIBLE );
                         saveDataBtnBasket ( String.valueOf ( currentResponseData.getId () ), false );
+
+                        // Button Plus visibility and save data
                         btnPlus.setVisibility ( View.VISIBLE );
                         saveDataPlus ( String.valueOf ( currentResponseData.getId () ), false );
+
+                        // Button Minus visibility and save data
+                        btnMinus.setVisibility ( View.VISIBLE );
+                        saveDataMinus ( String.valueOf ( currentResponseData.getId () ), false );
+
+                        // TextView textSum visibility and save data
+                        textSum.setVisibility ( View.VISIBLE );
+                        saveDataSum ( String.valueOf ( currentResponseData.getId () ), false );
                     }else {
+                        // Button Basket visibility and save data
                         btnBasket.setVisibility ( View.GONE );
                         saveDataBtnBasket ( String.valueOf ( currentResponseData.getId () ), true );
+
+                        // Button Plus visibility and save data
                         btnPlus.setVisibility ( View.VISIBLE );
                         saveDataPlus ( String.valueOf ( currentResponseData.getId () ), true );
 
+                        // Button Minus visibility and save data
+                        btnMinus.setVisibility ( View.VISIBLE );
+                        saveDataMinus ( String.valueOf ( currentResponseData.getId () ), true );
+
+                        // TextView textSum visibility and save data
+                        textSum.setVisibility ( View.VISIBLE );
+                        saveDataSum ( String.valueOf ( currentResponseData.getId () ), true );
 
                     }
                 }
@@ -99,8 +131,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         public void bind( ResponseData responseData ) {
             currentResponseData = responseData;
-            s = preferences.getBoolean ( String.valueOf ( currentResponseData.getId () ), true );
+            basket= preferencesBasket.getBoolean ( String.valueOf ( currentResponseData.getId () ), true );
             plus = preferencesPlus.getBoolean ( String.valueOf ( currentResponseData.getId () ), true );
+            minus = preferencesMinus.getBoolean ( String.valueOf ( currentResponseData.getId () ), true );
+            sum = preferencesSum.getBoolean ( String.valueOf ( currentResponseData.getId () ), false );
             // get image from url and set in ImageView
             String imageUrl = responseData.getImage ();
             Picasso.with ( itemView.getContext () )
@@ -112,25 +146,39 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             btnPrice.setText ( String.valueOf ( responseData.getPrice () + "₽" ));
 
 
-            // Кнопка Basket при входе в приложение
-            if(preferences.getBoolean ( String.valueOf ( currentResponseData.getId () ), false )){
+            // Кнопка Basket при входе в активити
+            if(preferencesBasket.getBoolean ( String.valueOf ( currentResponseData.getId () ), false )){
                 btnBasket.setVisibility ( View.GONE );
             }else {
                 btnBasket.setVisibility ( View.VISIBLE );
             }
 
-            // Кнопка Plus при входе в приложение
+            // Кнопка Plus при входе в активити
             if(preferencesPlus.getBoolean ( String.valueOf ( currentResponseData.getId () ), false )){
                 btnPlus.setVisibility ( View.VISIBLE );
             }else {
                 btnPlus.setVisibility ( View.GONE );
             }
 
+            // Кнопка Minus при входе в активити
+            if(preferencesPlus.getBoolean ( String.valueOf ( currentResponseData.getId () ), false )){
+                btnMinus.setVisibility ( View.VISIBLE );
+            }else {
+                btnMinus.setVisibility ( View.GONE );
+            }
+
+            // TextView textSum при входе в активити
+            if(preferencesSum.getBoolean ( String.valueOf ( currentResponseData.getId () ), false )){
+                textSum.setVisibility ( View.VISIBLE );
+            }else {
+                textSum.setVisibility ( View.GONE );
+            }
+
 
         }
 
         public void saveDataBtnBasket( String id, boolean dataToSave){
-            SharedPreferences.Editor editor = preferences.edit ();
+            SharedPreferences.Editor editor = preferencesBasket.edit ();
             editor.putBoolean ( id, dataToSave );
             editor.apply ();
         }
@@ -140,6 +188,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             editor.putBoolean ( id, dataToSave );
             editor.apply ();
         }
+
+        public void saveDataMinus(String id , boolean dataToSave){
+            SharedPreferences.Editor editor = preferencesMinus.edit ();
+            editor.putBoolean ( id, dataToSave );
+            editor.apply ();
+        }
+
+        public void saveDataSum(String id, boolean dataToSave){
+            SharedPreferences.Editor editor = preferencesSum.edit ();
+            editor.putBoolean ( id, dataToSave );
+            editor.apply ();
+        }
+
+
     }
 
 }
