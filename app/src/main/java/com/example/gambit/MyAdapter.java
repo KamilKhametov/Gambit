@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.Placeholder;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gambit.API.ResponseData;
@@ -24,6 +25,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private SharedPreferences preferencesPlus;
     private SharedPreferences preferencesMinus;
     private SharedPreferences preferencesSum;
+    private SharedPreferences preferencesNumberSum;
 
     public MyAdapter( List<ResponseData> responseDataList ) {
         this.responseDataList=responseDataList;
@@ -46,6 +48,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }
         if(preferencesSum == null){
             preferencesSum = parent.getContext ().getSharedPreferences ( "NICE_SUM", Context.MODE_PRIVATE );
+        }
+        if(preferencesNumberSum == null){
+            preferencesNumberSum = parent.getContext ().getSharedPreferences ( "NICE_NUMBER_SUM", Context.MODE_PRIVATE );
         }
         return vh;
     }
@@ -74,7 +79,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         boolean plus;
         boolean minus;
         boolean sum;
-        int number= 0;
+        int number = 0;
 
 
         public ViewHolder( @NonNull View itemView ) {
@@ -105,7 +110,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
                         // TextView textSum visibility and save data
                         textSum.setVisibility ( View.VISIBLE );
-                        saveDataSum ( String.valueOf ( currentResponseData.getId () ), false );
+                        saveDataTextSum ( String.valueOf ( currentResponseData.getId () ), false );
                     }else {
                         // Button Basket visibility and save data
                         btnBasket.setVisibility ( View.GONE );
@@ -121,7 +126,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
                         // TextView textSum visibility and save data
                         textSum.setVisibility ( View.VISIBLE );
-                        saveDataSum ( String.valueOf ( currentResponseData.getId () ), true );
+                        saveDataTextSum ( String.valueOf ( currentResponseData.getId () ), true );
 
                     }
                 }
@@ -131,10 +136,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         public void bind( ResponseData responseData ) {
             currentResponseData = responseData;
+            // Показ сохраненных данных на активити
             basket= preferencesBasket.getBoolean ( String.valueOf ( currentResponseData.getId () ), true );
             plus = preferencesPlus.getBoolean ( String.valueOf ( currentResponseData.getId () ), true );
             minus = preferencesMinus.getBoolean ( String.valueOf ( currentResponseData.getId () ), true );
             sum = preferencesSum.getBoolean ( String.valueOf ( currentResponseData.getId () ), false );
+            number = preferencesNumberSum.getInt ( String.valueOf ( currentResponseData.getId () ), 0 );
+            textSum.setText ( String.valueOf ( number ) );
+
+
             // get image from url and set in ImageView
             String imageUrl = responseData.getImage ();
             Picasso.with ( itemView.getContext () )
@@ -174,6 +184,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 textSum.setVisibility ( View.GONE );
             }
 
+            // Вызов клика на кнопку Plus
+            clickerPlus ();
+
 
         }
 
@@ -195,12 +208,37 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             editor.apply ();
         }
 
-        public void saveDataSum(String id, boolean dataToSave){
+        public void saveDataTextSum( String id, boolean dataToSave){
             SharedPreferences.Editor editor = preferencesSum.edit ();
             editor.putBoolean ( id, dataToSave );
             editor.apply ();
         }
 
+        public void saveDataNumberSum(String id, int dataToSave){
+            SharedPreferences.Editor editor = preferencesNumberSum.edit ();
+            editor.putInt ( id, dataToSave );
+            editor.apply ();
+        }
+
+        public void clickerPlus(){
+            btnPlus.setOnClickListener ( new View.OnClickListener () {
+                @Override
+                public void onClick( View view ) {
+                    number = Integer.parseInt ( textSum.getText ().toString () ) + 1;
+                    textSum.setText ( String.valueOf ( number ) );
+                    saveDataNumberSum ( String.valueOf ( currentResponseData.getId () ), number );
+                }
+            } );
+        }
+
+        public void clickerMinus(){
+            btnMinus.setOnClickListener ( new View.OnClickListener () {
+                @Override
+                public void onClick( View view ) {
+
+                }
+            } );
+        }
 
     }
 
