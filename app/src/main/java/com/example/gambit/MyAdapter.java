@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.Placeholder;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gambit.API.ResponseData;
@@ -38,6 +37,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public ViewHolder onCreateViewHolder( @NonNull ViewGroup parent, int viewType ) {
         View view =LayoutInflater.from ( parent.getContext () ).inflate ( R.layout.layout_item, parent, false );
         ViewHolder vh = new ViewHolder ( view );
+        // check sharedPreferences for null
         if(preferencesBasket == null){
             preferencesBasket= parent.getContext ().getSharedPreferences ( "NICE_BASKET", Context.MODE_PRIVATE );
         }
@@ -92,6 +92,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             textSum=itemView.findViewById ( R.id.textSum );
             btnBasket=itemView.findViewById ( R.id.btnBasket );
 
+            // Click on the btnBasket
+            btnBasketClick ();
+
+        }
+
+        public void btnBasketClick(){
             btnBasket.setOnClickListener ( new View.OnClickListener () {
                 @Override
                 public void onClick( View view ) {
@@ -187,7 +193,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             // Вызов клика на кнопку Minus
             clickerMinus ();
 
-
         }
 
         // Save data for object View
@@ -247,7 +252,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                             textSum.setVisibility ( View.GONE );
                             btnPlus.setVisibility ( View.GONE );
                             btnMinus.setVisibility ( View.GONE );
+
+                            // ставим 1, потому что number переменная становится равная 0, что сбрасывает значения в счетчике textSum
+                            number = 1;
+
                             btnBasket.setVisibility ( View.VISIBLE );
+                            saveDataBtnBasket ( String.valueOf ( currentResponseData.getId () ), false );
+                            saveDataNumberSum ( String.valueOf ( currentResponseData.getId () ), number );
+                            saveDataPlus ( String.valueOf ( currentResponseData.getId () ), false );
+                            saveDataMinus ( String.valueOf ( currentResponseData.getId () ), false );
                         }
                     }
                 }
