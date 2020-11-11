@@ -14,15 +14,16 @@
             android:layout_width="148dp"
             android:layout_height="148dp"
             android:layout_marginStart="13dp"
-            android:layout_marginTop="40dp" />
+            android:layout_marginTop="35dp" />
 
         <TextView
             android:id="@+id/titleFood"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="175dp"
-            android:layout_marginTop="45dp"
+            android:layout_marginTop="55dp"
             android:background="#FFFFFF"
+            android:fontFamily="@font/roboto_light"
             android:text="@string/app_name"
             android:textColor="#000000"
             android:textSize="16sp"
@@ -33,7 +34,7 @@
             android:id="@+id/btn_price"
             android:layout_width="72dp"
             android:layout_height="36dp"
-            android:layout_marginStart="175dp"
+            android:layout_marginStart="170dp"
             android:layout_marginTop="110dp"
             android:background="@drawable/round_for_btn_price"
             android:text="@string/price"
@@ -46,7 +47,7 @@
             android:id="@+id/btnMinus"
             android:layout_width="40dp"
             android:layout_height="36dp"
-            android:layout_marginStart="250dp"
+            android:layout_marginStart="245dp"
             android:layout_marginTop="110dp"
             android:background="@drawable/round_for_btn_price"
             android:backgroundTint="@color/color_for_action_bar"
@@ -59,8 +60,9 @@
             android:id="@+id/textSum"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="301dp"
+            android:layout_marginStart="297dp"
             android:layout_marginTop="120dp"
+            android:fontFamily="@font/roboto_light"
             android:text="0"
             android:textColor="@color/black"
             android:visibility="invisible" />
@@ -70,7 +72,7 @@
             android:id="@+id/btnPlus"
             android:layout_width="40dp"
             android:layout_height="36dp"
-            android:layout_marginStart="318dp"
+            android:layout_marginStart="314dp"
             android:layout_marginTop="110dp"
             android:background="@drawable/round_for_btn_price"
             android:backgroundTint="@color/color_for_action_bar"
@@ -82,10 +84,13 @@
             android:id="@+id/btnBasket"
             android:layout_width="110dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="250dp"
+            android:layout_marginStart="245dp"
             android:layout_marginTop="104dp"
+            android:layout_marginEnd="5dp"
+            android:fontFamily="@font/roboto_light"
             android:text="В корзину"
             android:textAllCaps="false"
+            android:textStyle="bold"
             android:visibility="visible" />
 
 
