@@ -15,6 +15,7 @@ import com.example.gambit.API.APIConfig;
 import com.example.gambit.API.APIService;
 import com.example.gambit.API.APIServiceConstructor;
 import com.example.gambit.API.ResponseData;
+import com.example.gambit.swipeController.SwipeController;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager=new LinearLayoutManager ( this );
     private MyAdapter myAdapter;
+    private SwipeController swipeController;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -52,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
                     recyclerView.setLayoutManager ( layoutManager );
                     recyclerView.setAdapter ( myAdapter );
 
-                    // Swipe method go!
                     swipeInRecyclerView ();
 
                 }
@@ -71,47 +72,10 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar ().setCustomView ( R.layout.action_bar_layout );
     }
 
-    private void swipeInRecyclerView() {
-        // Swipe for RecyclerView
-        ItemTouchHelper.SimpleCallback callback=new ItemTouchHelper.SimpleCallback ( 0, ItemTouchHelper.LEFT ) {
-            @Override
-            public boolean onMove( RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target ) {
-                return false;
-            }
 
-            // Что делать при свайпе: добавить в архив, либо удалить item`ы
-            @Override
-            public void onSwiped( RecyclerView.ViewHolder viewHolder, int direction ) {
-                // Возвращает свайп обратно
-                myAdapter.notifyItemChanged ( viewHolder.getAdapterPosition () );
-
-            }
-
-            // swipe draw method
-            @Override
-            public void onChildDraw( Canvas c, RecyclerView recyclerView,
-                                     RecyclerView.ViewHolder viewHolder, float dX, float dY,
-                                     int actionState, boolean isCurrentlyActive ) {
-                new RecyclerViewSwipeDecorator.Builder ( c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive )
-                        .addSwipeLeftBackgroundColor ( ContextCompat.getColor ( MainActivity.this, R.color.recycler_view_item_swipe_left_background ) )
-                        .addSwipeLeftActionIcon ( R.drawable.ic_like )
-                        .setSwipeLeftLabelColor ( Color.WHITE )
-                        .create ()
-                        .decorate ();
-
-                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                    float width=(float) viewHolder.itemView.getWidth ();
-                    float alpha= 30.0f - Math.abs ( dX ) / width;
-                    viewHolder.itemView.setAlpha ( alpha );
-                    viewHolder.itemView.setTranslationX ( dX );
-
-                } else {
-                    super.onChildDraw ( c, recyclerView, viewHolder, dX, dY,
-                                        actionState, isCurrentlyActive );
-                }
-            }
-        };
-        ItemTouchHelper itemTouchHelper=new ItemTouchHelper ( callback );
+    private void swipeInRecyclerView(){
+        swipeController = new SwipeController ( this, myAdapter );
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper ( swipeController );
         itemTouchHelper.attachToRecyclerView ( recyclerView );
     }
 
