@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.daimajia.swipe.SwipeLayout;
 import com.example.gambit.API.ResponseData;
 import com.squareup.picasso.Picasso;
 
@@ -25,33 +26,36 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private SharedPreferences preferencesMinus;
     private SharedPreferences preferencesSum;
     private SharedPreferences preferencesNumberSum;
+    private SharedPreferences preferencesImageLike;
 
 
     public MyAdapter( List<ResponseData> responseDataList ) {
         this.responseDataList=responseDataList;
     }
 
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder( @NonNull ViewGroup parent, int viewType ) {
-        View view =LayoutInflater.from ( parent.getContext () ).inflate ( R.layout.layout_item, parent, false );
-        ViewHolder vh = new ViewHolder ( view );
+        View view=LayoutInflater.from ( parent.getContext () ).inflate ( R.layout.layout_item, parent, false );
+        ViewHolder vh=new ViewHolder ( view );
         // check sharedPreferences for null
-        if(preferencesBasket == null){
-            preferencesBasket= parent.getContext ().getSharedPreferences ( "NICE_BASKET", Context.MODE_PRIVATE );
+        if (preferencesBasket == null) {
+            preferencesBasket=parent.getContext ().getSharedPreferences ( "NICE_BASKET", Context.MODE_PRIVATE );
         }
-        if (preferencesPlus == null){
-            preferencesPlus = parent.getContext ().getSharedPreferences ( "NICE_PLUS", Context.MODE_PRIVATE );
+        if (preferencesPlus == null) {
+            preferencesPlus=parent.getContext ().getSharedPreferences ( "NICE_PLUS", Context.MODE_PRIVATE );
         }
-        if(preferencesMinus == null){
-            preferencesMinus = parent.getContext ().getSharedPreferences ( "NICE_MINUS", Context.MODE_PRIVATE );
+        if (preferencesMinus == null) {
+            preferencesMinus=parent.getContext ().getSharedPreferences ( "NICE_MINUS", Context.MODE_PRIVATE );
         }
-        if(preferencesSum == null){
-            preferencesSum = parent.getContext ().getSharedPreferences ( "NICE_SUM", Context.MODE_PRIVATE );
+        if (preferencesSum == null) {
+            preferencesSum=parent.getContext ().getSharedPreferences ( "NICE_SUM", Context.MODE_PRIVATE );
         }
-        if(preferencesNumberSum == null){
-            preferencesNumberSum = parent.getContext ().getSharedPreferences ( "NICE_NUMBER_SUM", Context.MODE_PRIVATE );
+        if (preferencesNumberSum == null) {
+            preferencesNumberSum=parent.getContext ().getSharedPreferences ( "NICE_NUMBER_SUM", Context.MODE_PRIVATE );
+        }
+        if (preferencesImageLike == null) {
+            preferencesImageLike=parent.getContext ().getSharedPreferences ( "NICE_IMAGE_LIKE", Context.MODE_PRIVATE );
         }
         return vh;
     }
@@ -59,7 +63,48 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder( @NonNull ViewHolder holder, int position ) {
-        holder.bind( responseDataList.get ( position ));
+        holder.bind ( responseDataList.get ( position ) );
+        // Реализация SwipeLayout
+        holder.swipeLayout.setShowMode ( SwipeLayout.ShowMode.PullOut );
+        holder.swipeLayout.addDrag ( SwipeLayout.DragEdge.Right, holder.swipeLayout.findViewById ( R.id.go ) );
+        holder.swipeLayout.addSwipeListener ( new SwipeLayout.SwipeListener () {
+            @Override
+            public void onStartOpen( SwipeLayout layout ) {
+
+            }
+
+            // Открытие свайпа: закрасить image. Повторное открытие: убрать закрашивание image
+            @Override
+            public void onOpen( SwipeLayout layout ) {
+
+            }
+
+            @Override
+            public void onStartClose( SwipeLayout layout ) {
+
+            }
+
+            @Override
+            public void onClose( SwipeLayout layout ) {
+
+            }
+
+            @Override
+            public void onUpdate( SwipeLayout layout, int leftOffset, int topOffset ) {
+
+            }
+
+            // Автоматическое закрытие свайпа через 1 секунду
+            @Override
+            public void onHandRelease( SwipeLayout layout, float xvel, float yvel ) {
+                layout.postDelayed ( new Runnable () {
+                    @Override
+                    public void run() {
+                        layout.close ();
+                    }
+                }, 1000 );
+            }
+        } );
     }
 
     @Override
@@ -80,7 +125,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         boolean plus;
         boolean minus;
         boolean sum;
+        boolean imageLikeBool;
         int number=1;
+        private ImageView imageLike;
+        private SwipeLayout swipeLayout;
+
 
         public ViewHolder( @NonNull View itemView ) {
             super ( itemView );
@@ -91,13 +140,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             btnPlus=itemView.findViewById ( R.id.btnPlus );
             textSum=itemView.findViewById ( R.id.textSum );
             btnBasket=itemView.findViewById ( R.id.btnBasket );
+            imageLike=itemView.findViewById ( R.id.trash );
+            swipeLayout=itemView.findViewById ( R.id.swipe );
 
             // Click on the btnBasket
             btnBasketClick ();
-
         }
 
-        public void btnBasketClick(){
+        public void btnBasketClick() {
             btnBasket.setOnClickListener ( new View.OnClickListener () {
                 @Override
                 public void onClick( View view ) {
@@ -149,6 +199,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             sum=preferencesSum.getBoolean ( String.valueOf ( currentResponseData.getId () ), true );
             number=preferencesNumberSum.getInt ( String.valueOf ( currentResponseData.getId () ), 1 );
             textSum.setText ( String.valueOf ( number ) );
+            imageLikeBool=preferencesImageLike.getBoolean ( String.valueOf ( currentResponseData.getId () ), true );
 
             // get image from url and set in ImageView
             String imageUrl=responseData.getImage ();
@@ -186,6 +237,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 textSum.setVisibility ( View.VISIBLE );
             } else {
                 textSum.setVisibility ( View.GONE );
+            }
+
+            // ImageLike при входе в активити
+            if (preferencesImageLike.getBoolean ( String.valueOf ( currentResponseData.getId () ), false )) {
+                imageLike.setImageResource ( R.drawable.ic_like );
+            } else {
+                imageLike.setImageResource ( R.drawable.ic_unlike );
             }
 
             // Вызов клика на кнопку Plus
@@ -226,6 +284,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             editor.apply ();
         }
 
+        public void saveDataImageLike( String id, boolean dataToSave ) {
+            SharedPreferences.Editor editor=preferencesImageLike.edit ();
+            editor.putBoolean ( id, dataToSave );
+            editor.apply ();
+        }
+
 
         // Clickers for buttons plus and minus
         public void clickerPlus() {
@@ -254,7 +318,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                             btnMinus.setVisibility ( View.GONE );
 
                             // ставим 1, потому что number переменная становится равная 0, что сбрасывает значения в счетчике textSum
-                            number = 1;
+                            number=1;
 
                             btnBasket.setVisibility ( View.VISIBLE );
                             saveDataBtnBasket ( String.valueOf ( currentResponseData.getId () ), false );

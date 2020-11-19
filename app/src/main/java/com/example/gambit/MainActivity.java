@@ -15,7 +15,6 @@ import com.example.gambit.API.APIConfig;
 import com.example.gambit.API.APIService;
 import com.example.gambit.API.APIServiceConstructor;
 import com.example.gambit.API.ResponseData;
-import com.example.gambit.swipeController.SwipeController;
 
 import java.util.List;
 
@@ -29,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager=new LinearLayoutManager ( this );
     private MyAdapter myAdapter;
-    private SwipeController swipeController;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -47,15 +45,11 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse( Call<List<ResponseData>> call, Response<List<ResponseData>> response ) {
                 if (response.isSuccessful ()) {
                     List<ResponseData> responseData=response.body ();
-
                     recyclerView=findViewById ( R.id.recyclerView );
                     recyclerView.setHasFixedSize ( true );
                     myAdapter=new MyAdapter ( responseData );
                     recyclerView.setLayoutManager ( layoutManager );
                     recyclerView.setAdapter ( myAdapter );
-
-                    swipeInRecyclerView ();
-
                 }
             }
 
@@ -64,19 +58,10 @@ public class MainActivity extends AppCompatActivity {
 
             }
         } );
-
     }
 
     private void setActionBarTitle() {
         getSupportActionBar ().setDisplayOptions ( ActionBar.DISPLAY_SHOW_CUSTOM );
         getSupportActionBar ().setCustomView ( R.layout.action_bar_layout );
     }
-
-
-    private void swipeInRecyclerView(){
-        swipeController = new SwipeController ( this, myAdapter );
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper ( swipeController );
-        itemTouchHelper.attachToRecyclerView ( recyclerView );
-    }
-
 }
