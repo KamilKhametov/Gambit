@@ -64,47 +64,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder( @NonNull ViewHolder holder, int position ) {
         holder.bind ( responseDataList.get ( position ) );
-        // Реализация SwipeLayout
-        holder.swipeLayout.setShowMode ( SwipeLayout.ShowMode.PullOut );
-        holder.swipeLayout.addDrag ( SwipeLayout.DragEdge.Right, holder.swipeLayout.findViewById ( R.id.go ) );
-        holder.swipeLayout.addSwipeListener ( new SwipeLayout.SwipeListener () {
-            @Override
-            public void onStartOpen( SwipeLayout layout ) {
-
-            }
-
-            // Открытие свайпа: закрасить image. Повторное открытие: убрать закрашивание image
-            @Override
-            public void onOpen( SwipeLayout layout ) {
-
-            }
-
-            @Override
-            public void onStartClose( SwipeLayout layout ) {
-
-            }
-
-            @Override
-            public void onClose( SwipeLayout layout ) {
-
-            }
-
-            @Override
-            public void onUpdate( SwipeLayout layout, int leftOffset, int topOffset ) {
-
-            }
-
-            // Автоматическое закрытие свайпа через 1 секунду
-            @Override
-            public void onHandRelease( SwipeLayout layout, float xvel, float yvel ) {
-                layout.postDelayed ( new Runnable () {
-                    @Override
-                    public void run() {
-                        layout.close ();
-                    }
-                }, 1000 );
-            }
-        } );
     }
 
     @Override
@@ -126,6 +85,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         boolean minus;
         boolean sum;
         boolean imageLikeBool;
+        boolean flagImageLike;
         int number=1;
         private ImageView imageLike;
         private SwipeLayout swipeLayout;
@@ -145,6 +105,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
             // Click on the btnBasket
             btnBasketClick ();
+            // Swipe in RecyclerView item
+            swipeLayoutForRecItem ();
         }
 
         public void btnBasketClick() {
@@ -290,6 +252,59 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             editor.apply ();
         }
 
+
+        public void swipeLayoutForRecItem() {
+            flagImageLike=true;
+            // Реализация SwipeLayout
+            swipeLayout.setShowMode ( SwipeLayout.ShowMode.PullOut );
+            swipeLayout.addDrag ( SwipeLayout.DragEdge.Right, swipeLayout.findViewById ( R.id.go ) );
+            swipeLayout.addSwipeListener ( new SwipeLayout.SwipeListener () {
+                @Override
+                public void onStartOpen( SwipeLayout layout ) {
+
+                }
+
+                // Открытие свайпа: закрасить image. Повторное открытие: убрать закрашивание image
+                @Override
+                public void onOpen( SwipeLayout layout ) {
+                    if (flagImageLike) {
+                        imageLike.setImageResource ( R.drawable.ic_like );
+                        saveDataImageLike ( String.valueOf ( currentResponseData.getId () ), true );
+                        flagImageLike=false;
+                    } else {
+                        imageLike.setImageResource ( R.drawable.ic_unlike );
+                        saveDataImageLike ( String.valueOf ( currentResponseData.getId () ), true );
+                        flagImageLike=true;
+                    }
+                }
+
+                @Override
+                public void onStartClose( SwipeLayout layout ) {
+
+                }
+
+                @Override
+                public void onClose( SwipeLayout layout ) {
+                    saveDataImageLike ( String.valueOf ( currentResponseData.getId () ), true );
+                }
+
+                @Override
+                public void onUpdate( SwipeLayout layout, int leftOffset, int topOffset ) {
+
+                }
+
+                // Автоматическое закрытие свайпа через 1 секунду
+                @Override
+                public void onHandRelease( SwipeLayout layout, float xvel, float yvel ) {
+                    layout.postDelayed ( new Runnable () {
+                        @Override
+                        public void run() {
+                            layout.close ();
+                        }
+                    }, 600 );
+                }
+            } );
+        }
 
         // Clickers for buttons plus and minus
         public void clickerPlus() {
