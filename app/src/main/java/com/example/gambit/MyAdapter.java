@@ -2,6 +2,8 @@ package com.example.gambit;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.daimajia.swipe.SwipeLayout;
@@ -27,7 +30,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private SharedPreferences preferencesSum;
     private SharedPreferences preferencesNumberSum;
     private SharedPreferences preferencesImageLike;
-
 
     public MyAdapter( List<ResponseData> responseDataList ) {
         this.responseDataList=responseDataList;
@@ -85,7 +87,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         boolean minus;
         boolean sum;
         boolean imageLikeBool;
-        boolean flagImageLike;
         int number=1;
         private ImageView imageLike;
         private SwipeLayout swipeLayout;
@@ -162,6 +163,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             number=preferencesNumberSum.getInt ( String.valueOf ( currentResponseData.getId () ), 1 );
             textSum.setText ( String.valueOf ( number ) );
             imageLikeBool=preferencesImageLike.getBoolean ( String.valueOf ( currentResponseData.getId () ), true );
+
 
             // get image from url and set in ImageView
             String imageUrl=responseData.getImage ();
@@ -254,7 +256,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
 
         public void swipeLayoutForRecItem() {
-            flagImageLike=true;
             // Реализация SwipeLayout
             swipeLayout.setShowMode ( SwipeLayout.ShowMode.PullOut );
             swipeLayout.addDrag ( SwipeLayout.DragEdge.Right, swipeLayout.findViewById ( R.id.go ) );
@@ -267,15 +268,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 // Открытие свайпа: закрасить image. Повторное открытие: убрать закрашивание image
                 @Override
                 public void onOpen( SwipeLayout layout ) {
-                    if (flagImageLike) {
+                    if (imageLikeBool) {
                         imageLike.setImageResource ( R.drawable.ic_like );
-                        saveDataImageLike ( String.valueOf ( currentResponseData.getId () ), true );
-                        flagImageLike=false;
+                        imageLikeBool = false;
+
                     } else {
                         imageLike.setImageResource ( R.drawable.ic_unlike );
-                        saveDataImageLike ( String.valueOf ( currentResponseData.getId () ), true );
-                        flagImageLike=true;
+                        imageLikeBool = true;
                     }
+                    saveDataImageLike ( String.valueOf ( currentResponseData.getId () ), imageLikeBool );
                 }
 
                 @Override
@@ -285,7 +286,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
                 @Override
                 public void onClose( SwipeLayout layout ) {
-                    saveDataImageLike ( String.valueOf ( currentResponseData.getId () ), true );
+
                 }
 
                 @Override
