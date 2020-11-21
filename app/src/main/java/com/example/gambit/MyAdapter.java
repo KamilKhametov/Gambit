@@ -204,10 +204,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             }
 
             // ImageLike при входе в активити
-            if (preferencesImageLike.getBoolean ( String.valueOf ( currentResponseData.getId () ), false )) {
-                imageLike.setImageResource ( R.drawable.ic_like );
-            } else {
+            if (preferencesImageLike.getBoolean ( String.valueOf ( currentResponseData.getId () ), imageLikeBool )) {
                 imageLike.setImageResource ( R.drawable.ic_unlike );
+            } else {
+                imageLike.setImageResource ( R.drawable.ic_like );
             }
 
             // Вызов клика на кнопку Plus
